@@ -1,0 +1,53 @@
+.navbar-button-plain {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: #9b36ee;
+    width: 60%;
+    box-shadow: 0 0 15px black;
+}
+
+.messages-icon {
+    width: 20%;
+    height: 50%;
+    padding: 10px 0;
+    margin: 0 10px;
+    transition: color 300ms, background-color 300ms;
+    color: #d0bcf6;
+    border-radius: 25px;
+}
+
+.messages-icon:hover {
+    transition: color 300ms, background-color 300ms;
+    color: #f6f1ff;
+    background-color: #a960ef;
+}
+
+.profile-tab {
+    height: 80%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: color 300ms, background-color 300ms;
+    color: #d0bcf6;
+    border-radius: 25px;
+    text-decoration: none;
+}
+
+.profile-tab:hover {
+    transition: color 300ms, background-color 300ms;
+    color: #f6f1ff;
+    background-color: #a960ef;
+}
+
+.profile-icon {
+    height: 100%;
+    width: 20%;
+    margin-left: 10px;
+}
+
+.profile-name {
+    margin-left: 10px;
+    font-weight: bold;
+}
+

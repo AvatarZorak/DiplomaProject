@@ -1,0 +1,10 @@
+.categories {
+    width: 15%;
+    background-color: #b87afa;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    margin: 15% 0;
+    box-shadow: 0 0 5px black;
+}

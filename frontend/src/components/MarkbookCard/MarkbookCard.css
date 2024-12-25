@@ -1,0 +1,9 @@
+.markbook-card {
+    display: block;
+    height: 90%;
+    background-color: darkgray;
+    width: 20%;
+    margin: 0 10px;
+    border-radius: 25px;
+    text-decoration: none;
+}

@@ -1,0 +1,44 @@
+.subject-table-div {
+    width: 100%;
+
+}
+
+.subject-table {
+    width: 100%;
+}
+
+tbody {
+    width: 100%;
+}
+
+th {
+    display: flex;
+    justify-content: center;
+}
+
+.subject-table-row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+
+}
+
+.subject-table-cell {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px #5d5d5d solid;
+    padding-left: 1%;
+    font-size: 20px;
+}
+
+.subject-table-cell-subject-name {
+    width: 40%;
+}
+
+.subject-table-cell-subject-grades {
+    flex-grow: 1;
+}
+
+.subject-table-cell:not(:last-child) {
+    border-right: 1px #5d5d5d solid;
+}

@@ -1,0 +1,16 @@
+.grade {
+    display: flex;
+    justify-content: center;
+    width: 25px;
+    border-radius: 50%;
+    margin: 0.3% 0.3%;
+}
+
+.grade-popup {
+    position: relative;
+    background-color: red;
+}
+
+/*.grade:hover + .grade-popup {*/
+/*    display: block*/
+/*}*/
