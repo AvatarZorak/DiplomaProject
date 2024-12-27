@@ -8,7 +8,7 @@ export class StudentMarkbookService {
   constructor(@InjectModel('Student') private studentModel: Model<IStudent>) {}
 
   async getStudents(): Promise<IStudent[]> {
-    const student = await this.studentModel.find();
+    const student = await this.studentModel.find().exec();
 
     if (!student || student.length == 0) {
       throw new NotFoundException('Students data not found!');
