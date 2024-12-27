@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { StudentMarkbookService } from './student-markbook.service';
 
 @Controller('student-markbook')
 export class StudentMarkbookController {
-  constructor(private readonly studentMarkbookService: StudentMarkbookService,) {}
+  constructor(
+    private readonly studentMarkbookService: StudentMarkbookService,
+  ) {}
 
-  @Get()
-  getStudents() {
-    return this.studentMarkbookService.getStudents();
+  @Get('/:id/:year')
+  getStudents(@Param('id') id: number, @Param('year') year: number) {
+    return this.studentMarkbookService.getStudentById(id, year);
   }
 }

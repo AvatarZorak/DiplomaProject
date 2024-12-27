@@ -6,10 +6,10 @@ import {Link} from "react-router-dom";
 
 interface Props {
     type :string
+    name?: string
 }
 
-function NavbarButtonPlain({type} :Props) {
-    const name :string = "Alexandar Hristov"
+function NavbarButtonPlain({type, name} :Props) {
 
     return <>
         {type == "general" &&

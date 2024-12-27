@@ -1,5 +1,5 @@
 export interface IGrade {
   grade: number;
-  expanded_grade: number;
+  expandedGrade: number;
   description: string;
 }

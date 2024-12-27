@@ -1,31 +1,15 @@
 import "./SubjectTable.css"
-import Grade from "../Grade/Grade.tsx";
+import {SchoolYear} from "../../interface/SchoolYear.tsx";
+import {Subject} from "../../interface/Subject.tsx";
+import GradeBox from "../GradeBox/GradeBox.tsx";
 
-interface Grade {
-    grade_number :number
-    description :string
+interface Props {
+    schoolYear: SchoolYear
 }
 
-interface Subject {
-    name :string
-    grades :Grade[]
-}
+function SubjectTable({ schoolYear }: Props) {
 
-function SubjectTable() {
-    const subjects :Subject[] = [
-        {
-            name: "Math",
-            grades: [{grade_number: 6, description: "smth"}, {grade_number: 4, description: "smth2"}]
-        },
-        {
-            name: "BEL",
-            grades: []
-        },
-        {
-            name: "Biology",
-            grades: [{grade_number: 5, description: "smth3"}]
-        }
-    ]
+    const subjects = schoolYear.subjects
 
     return <>
         <div className="subject-table-div">
@@ -39,11 +23,11 @@ function SubjectTable() {
                     {
                         subjects.map((subject: Subject) => {
                             return <tr className="subject-table-row">
-                                <td className="subject-table-cell subject-table-cell-subject-name">{subject.name}</td>
+                                <td className="subject-table-cell subject-table-cell-subject-name">{subject.name} - {subject.teacher}</td>
                                 <td className="subject-table-cell subject-table-cell-subject-grades">
                                     {
-                                        subject.grades.map((grade :Grade) => {
-                                            return <Grade grade_number={grade.grade_number} description={grade.description}></Grade>
+                                        subject.grades.map((grade) => {
+                                            return <GradeBox grade={grade}></GradeBox>
                                         })
                                     }
                                 </td>

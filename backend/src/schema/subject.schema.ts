@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Grade, GradeSchema } from './grade.schema';
 
-@Schema()
+@Schema({ _id: false })
 export class Subject {
   @Prop({ type: String })
   name: string;

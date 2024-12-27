@@ -1,7 +1,8 @@
 import { Document } from 'mongoose';
-import { ISchoolYear } from './school_year.interface';
+import { ISchoolYear } from './school-year.interface';
 
 export interface IStudent extends Document {
+  id: number;
   name: string;
-  school_years: ISchoolYear[];
+  schoolYears: ISchoolYear[];
 }

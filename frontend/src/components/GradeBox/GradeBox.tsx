@@ -1,9 +1,9 @@
-import "./Grade.css"
+import "./GradeBox.css"
 import {useState} from "react";
+import {Grade} from "../../interface/Grade.tsx";
 
 interface Props {
-    grade_number :number
-    description :string
+    grade: Grade
 }
 
 function getColor(grade_number :number) {
@@ -13,19 +13,19 @@ function getColor(grade_number :number) {
 }
 
 
-function Grade({grade_number, description}: Props) {
+function GradeBox({ grade }: Props) {
 
     const [gradePopupState, setGradePopupState] = useState(false)
 
     return <>
 
-        <div onClick={() => {setGradePopupState(!gradePopupState)}} className="grade" style={getColor(grade_number)}>
-            {grade_number}
+        <div onClick={() => {setGradePopupState(!gradePopupState)}} className="grade" style={getColor(grade.grade)}>
+            {grade.grade}
         </div>
         {gradePopupState && <div id="grade-popup" className="grade-popup">
-            {description}
+            {grade.expandedGrade} - {grade.description}
         </div>}
     </>
 }
 
-export default Grade
+export default GradeBox
