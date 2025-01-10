@@ -1,0 +1,140 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: ClusterComposition
+spec:
+  compositeTypeRef:
+    apiVersion: xrdgroup/v1alpha1
+    kind: ClusterXR
+  mode: Pipeline
+  pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: patch-and-transform-function
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+#########################################################################################
+          - name: cluster-iam-role
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Role
+              metadata:
+                name: ah-app-cluster-role
+              spec:
+                forProvider:
+                  assumeRolePolicyDocument: |
+                    {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": [
+                              "eks.amazonaws.com"
+                            ]
+                          },
+                          "Action": [
+                            "sts:AssumeRole",
+                            "sts:TagSession"
+                          ]
+                        }
+                      ]
+                    }
+                providerConfigRef:
+                  name: aws-provider-config
+#########################################################################################
+          - name: cluster-role-policy-attachment-AmazonEKSClusterPolicy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-cluster-role-policy-attachment-AmazonEKSClusterPolicy
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+                  roleNnameRef:
+                    name: ah-app-cluster-role
+                providerConfigRef:
+                  name: aws-provider-config
+#########################################################################################
+          - name: node-iam-role
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Role
+              metadata:
+                name: ah-app-node-role
+              spec:
+                forProvider:
+                  assumeRolePolicyDocument: |
+                    {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": [
+                              "ec2.amazonaws.com"
+                            ]
+                          },
+                          "Action": [
+                            "sts:AssumeRole"
+                          ]
+                        }
+                      ]
+                    }
+                providerConfigRef:
+                  name: aws-provider-config
+#########################################################################################
+          - name: node-role-policy-attachment-AmazonEKSWorkerNodePolicy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-node-role-policy-attachment-AmazonEKSWorkerNodePolicy
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+                  roleNnameRef:
+                    name: ah-app-node-role
+                providerConfigRef:
+                  name: aws-provider-config
+#########################################################################################
+          - name: node-role-policy-attachment-AmazonEC2ContainerRegistryReadOnly
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-node-role-policy-attachment-AmazonEC2ContainerRegistryReadOnly
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+                  roleNnameRef:
+                    name: ah-app-node-role
+                providerConfigRef:
+                  name: aws-provider-config
+#########################################################################################
+          - name: node-role-policy-attachment-AmazonEKS_CNI_Policy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-node-role-policy-attachment-AmazonEKS_CNI_Policy
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+                  roleNnameRef:
+                    name: ah-app-node-role
+                providerConfigRef:
+                  name: aws-provider-config
+#########################################################################################
+          - name: eks-cluster
+            base:
+              apiVesrion: eks.aws.crossplane.io/v1beta1
+              kind: Cluster
+              metadata:
+                name: ah-app-eks
+              spec:
+                forProvider:
+                  region: eu-central-1

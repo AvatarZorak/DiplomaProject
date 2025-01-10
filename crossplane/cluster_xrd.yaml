@@ -1,0 +1,12 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: clusterxrd.xrdgroup
+spec:
+  group: xrdgroup
+  names:
+    kind: ClusterXR
+    plural: clusterxrs
+  claimNames:
+    kind: Cluster
+    plural: clusters
