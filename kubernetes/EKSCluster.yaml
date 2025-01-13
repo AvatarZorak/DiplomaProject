@@ -1,0 +1,12 @@
+apiVersion: xrdgroup.org/v1alpha1
+kind: ClusterXR
+metadata:
+  name: ah-app-eks-cluster
+spec:
+  nodeRoleName: ah-app-node-role
+  clusterRoleName: ah-app-cluster-role
+  clusterName: ah-app-eks
+  vpcName: ah-app-vpc
+  securityGroupName: ah-app-security-group
+  subnetName: ah-app-subnet
+  igwName: ah-app-igw
