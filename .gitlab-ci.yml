@@ -1,0 +1,35 @@
+stages:
+  - build
+
+before_script:
+    - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - export AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+
+build-frontend-image:
+  stage: build
+  image: docker:latest
+  services:
+      - docker:dind
+  script:
+    - aws get-login-password --region=eu-central-1 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com
+    - docker build -t $ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-frontend-repository:$CI_PIPELINE_IID
+  rules:
+      - changes:
+          - ./frontend/**/*
+  tags:
+      - ci-shared
+
+build-backend-image:
+  stage: build
+  image: docker:latest
+  services:
+      - docker:dind
+  script:
+    - aws get-login-password --region=eu-central-1 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com
+    - docker build -t $ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-backend-repository:$CI_PIPELINE_IID
+  rules:
+      - changes:
+          - ./backend/**/*
+  tags:
+      - ci-shared
