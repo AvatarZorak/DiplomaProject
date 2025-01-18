@@ -11,6 +11,8 @@ test:
   stage: testing
   script:
     - echo "test"
+  tags:
+    - ci-shared
 
 build-frontend-image:
   stage: build
