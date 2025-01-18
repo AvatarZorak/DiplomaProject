@@ -19,7 +19,7 @@ build-frontend-image:
     - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-frontend-repository:$CI_PIPELINE_IID ./frontend
   rules:
       - changes:
-          - ./frontend/test
+          - frontend/**/*
   tags:
       - ci-shared
 
@@ -33,6 +33,6 @@ build-backend-image:
     - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-backend-repository:$CI_PIPELINE_IID ./backend
   rules:
       - changes:
-          - web-application/backend/**/*
+          - backend/**/*
   tags:
       - ci-shared
