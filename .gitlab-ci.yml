@@ -10,7 +10,7 @@ stages:
 test:
   stage: testing
   script:
-    - echo "$TEST_VARIABLE"
+    - echo "$ACCOUNT_ID"
   tags:
     - ci-shared
 
