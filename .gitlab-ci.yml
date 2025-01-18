@@ -20,7 +20,7 @@ build-frontend-image:
   services:
       - docker:dind
   script:
-    - aws ecr get-login-password --region=eu-central-1 | docker login --username AWS --password-stdin 722377226063.dkr.ecr.eu-central-1.amazonaws.com
+    - aws ecr get-login-password --region=eu-central-1 | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com
     - docker build -t $ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-frontend-repository:$CI_PIPELINE_IID
   # rules:
   #     - changes:
