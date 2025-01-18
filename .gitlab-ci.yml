@@ -10,7 +10,7 @@ stages:
 test:
   stage: testing
   script:
-    - echo "test"
+    - echo "$TEST_VARIABLE"
   tags:
     - ci-shared
 
