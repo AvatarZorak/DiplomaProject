@@ -253,7 +253,7 @@ spec:
                   name: aws-provider-config
             patches:
               - type: ToCompositeFieldPath
-                fromFieldPath: status.atProvider.launchTemplate.launchTemplateName
+                fromFieldPath: metadata.name
                 toFieldPath: status.launchTemplateName
 #########################################################################################
           - name: node-group
