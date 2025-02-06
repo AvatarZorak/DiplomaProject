@@ -2,6 +2,8 @@ apiVersion: xrdgroup.org/v1alpha1
 kind: VPCXR
 metadata:
   name: ah-app-vpc
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   vpcName: ah-app-vpc
   subnetName: ah-app-subnet

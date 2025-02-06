@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: application-infrastructure
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
+      targetRevision: main
+      path: infrastructure_cluster/argocd/bottom_level_applications/application_infrastructure
+  destination:
+    name: in-cluster
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - ApplyOutOfSyncOnly=true

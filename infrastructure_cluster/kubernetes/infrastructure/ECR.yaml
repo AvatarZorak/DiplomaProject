@@ -1,0 +1,9 @@
+apiVersion: xrdgroup.org
+kind: ECRRepositoryXR
+metadata:
+  name: ah-app-ecr-repositories
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  frontendRepositoryName: ah-frontend
+  backendRepositoryName: ah-backend

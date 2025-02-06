@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: application-cluster-configuration
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
+      targetRevision: main
+      path: application_cluster/kubernetes/additional_resources
+  destination:
+    name: remote
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - ApplyOutOfSyncOnly=true

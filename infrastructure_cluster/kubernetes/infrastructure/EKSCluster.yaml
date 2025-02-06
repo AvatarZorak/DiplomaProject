@@ -2,6 +2,8 @@ apiVersion: xrdgroup.org/v1alpha1
 kind: ClusterXR
 metadata:
   name: ah-app-eks-cluster
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   nodeRoleName: ah-app-node-role
   clusterRoleName: ah-app-cluster-role

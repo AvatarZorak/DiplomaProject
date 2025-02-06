@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mongodb-application
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    helm:
+      repoURL: "registry-1.docker.io/bitnamicharts"
+      path: "mongodb"
+      chart: mongodb
+      targetRevision: 16.4.2
+      values: |
+        architecture: replicaset
+        replicaCount: 2
+        auth:
+          enabled: true
+          rootUser: admin
+          rootPassword: pass
+          usernames: ["user"]
+          databases: ["Markbook"]
+        service:
+          nameOverride: "mongo-service"
+        arbiter:
+          enabled: false
+  destination:
+    name: remote
+    namespace: default

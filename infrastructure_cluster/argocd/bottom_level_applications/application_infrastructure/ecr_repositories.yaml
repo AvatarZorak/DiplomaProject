@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: network-configuration
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  project: default
+  sources:
+    - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
+      targetRevision: main
+      path: infrastructure_cluster/crossplane/ecr
+    - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
+      targetRevision: main
+      path: infrastructure_cluster/kubernetes/infrastructure
+      directory:
+        include: "ECR.yaml"
+  destination:
+    name: in-cluster
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - ApplyOutOfSyncOnly=true

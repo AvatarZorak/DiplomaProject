@@ -2,6 +2,8 @@ apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
   name: ecr-repository-composition
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   compositeTypeRef:
     apiVersion: xrdgroup.org/v1alpha1
