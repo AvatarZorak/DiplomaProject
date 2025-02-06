@@ -3,7 +3,7 @@ kind: Composition
 metadata:
   name: vpc-composition
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   compositeTypeRef:
     apiVersion: xrdgroup.org/v1alpha1
