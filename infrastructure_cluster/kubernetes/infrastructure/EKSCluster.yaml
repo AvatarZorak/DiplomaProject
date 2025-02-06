@@ -9,4 +9,5 @@ spec:
   vpcName: ah-app-vpc
   securityGroupName: ah-app-security-group
   subnetName: ah-app-subnet
-  igwName: ah-app-igw
+  albRoleName: ah-app-alb-role
+  ebsCsiRoleName: ah-app-ebs-csi-role

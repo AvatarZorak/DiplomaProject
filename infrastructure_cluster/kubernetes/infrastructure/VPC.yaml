@@ -1,0 +1,8 @@
+apiVersion: xrdgroup.org/v1alpha1
+kind: VPCXR
+metadata:
+  name: ah-app-vpc
+spec:
+  vpcName: ah-app-vpc
+  subnetName: ah-app-subnet
+  igwName: ah-app-igw

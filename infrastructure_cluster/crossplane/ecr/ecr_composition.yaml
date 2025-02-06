@@ -1,0 +1,55 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: ecr-repository-composition
+spec:
+  compositeTypeRef:
+    apiVersion: xrdgroup.org/v1alpha1
+    kind: ECRRepositoryXR
+  mode: Pipeline
+  pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: patch-and-transform-function
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+#########################################################################################
+          - name: ecr-frontend-repository
+            base:
+              apiVersion: ecr.aws.crossplane.io/v1beta1
+              kind: Repository
+              spec:
+                deletionPolicy: Orphan
+                forProvider:
+                  imageScanningConfiguration:
+                    scanOnPush: false
+                  imageTagMutability: MUTABLE
+                  region: eu-central-1
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.frontendRepositoryName
+                toFieldPath: metadata.name
+#########################################################################################
+          - name: ecr-backend-repository
+            base:
+              apiVersion: ecr.aws.crossplane.io/v1beta1
+              kind: Repository
+              spec:
+                deletionPolicy: Orphan
+                forProvider:
+                  imageScanningConfiguration:
+                    scanOnPush: false
+                  imageTagMutability: MUTABLE
+                  region: eu-central-1
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.backendRepositoryName
+                toFieldPath: metadata.name
+#########################################################################################
+    - step: detect-readiness
+      functionRef:
+        name: auto-ready-function

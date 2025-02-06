@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: clusterxrs.xrdgroup.org
+  name: vpcxrs.xrdgroup.org
 spec:
   group: xrdgroup.org
   versions:
@@ -15,33 +15,21 @@ spec:
             spec:
               type: object
               properties:
-                nodeRoleName:
-                  type: string
-                clusterRoleName:
-                  type: string
-                clusterName:
-                  type: string
                 vpcName:
-                  type: string
-                securityGroupName:
                   type: string
                 subnetName:
                   type: string
                 igwName:
                   type: string
               required:
-                - nodeRoleName
-                - clusterRoleName
-                - clusterName
                 - vpcName
-                - securityGroupName
                 - subnetName
                 - igwName
           required:
             - spec
   names:
-    kind: ClusterXR
-    plural: clusterxrs
+    kind: VPCXR
+    plural: vpcxrs
   claimNames:
-    kind: EKSCluster
-    plural: eksclusters
+    kind: VPC
+    plural: vpcs

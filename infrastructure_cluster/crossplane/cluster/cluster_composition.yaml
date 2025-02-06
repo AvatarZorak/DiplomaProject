@@ -1,0 +1,712 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: cluster-composition
+spec:
+  compositeTypeRef:
+    apiVersion: xrdgroup.org/v1alpha1
+    kind: ClusterXR
+  mode: Pipeline
+  pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: patch-and-transform-function
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        patchSets:
+          - name: node-role-patchset
+            patches:
+              - fromFieldPath: spec.nodeRoleName
+                toFieldPath: spec.forProvider.roleNameRef.name
+          - name: vpc-patchset
+            patches:
+              - fromFieldPath: spec.vpcName
+                toFieldPath: spec.forProvider.vpcIdRef.name
+        resources:
+#########################################################################################
+          - name: cluster-iam-role
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Role
+              spec:
+                forProvider:
+                  assumeRolePolicyDocument: |
+                    {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": [
+                              "eks.amazonaws.com"
+                            ]
+                          },
+                          "Action": [
+                            "sts:AssumeRole",
+                            "sts:TagSession"
+                          ]
+                        }
+                      ]
+                    }
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.clusterRoleName
+                toFieldPath: metadata.name
+#########################################################################################
+          - name: cluster-role-policy-attachment-AmazonEKSClusterPolicy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-cluster-role-policy-attachment-AmazonEKSClusterPolicy
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+                  roleNameRef:
+                    name: ah-app-cluster-role
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.clusterRoleName
+                toFieldPath: spec.forProvider.roleNameRef.name
+#########################################################################################
+          - name: node-iam-role
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Role
+              metadata:
+                name: ah-app-node-role
+              spec:
+                forProvider:
+                  assumeRolePolicyDocument: |
+                    {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": [
+                              "ec2.amazonaws.com"
+                            ]
+                          },
+                          "Action": [
+                            "sts:AssumeRole"
+                          ]
+                        }
+                      ]
+                    }
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.nodeRoleName
+                toFieldPath: metadata.name
+#########################################################################################
+          - name: node-role-policy-attachment-AmazonEKSWorkerNodePolicy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-node-role-policy-attachment-AmazonEKSWorkerNodePolicy
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+                providerConfigRef:
+                        name: aws-provider-config
+            patches:
+              - type: PatchSet
+                patchSetName: node-role-patchset
+#########################################################################################
+          - name: node-role-policy-attachment-AmazonEC2ContainerRegistryReadOnly
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-node-role-policy-attachment-AmazonEC2ContainerRegistryReadOnly
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - type: PatchSet
+                patchSetName: node-role-patchset
+#########################################################################################
+          - name: node-role-policy-attachment-AmazonEKS_CNI_Policy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-node-role-policy-attachment-AmazonEKS_CNI_Policy
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - type: PatchSet
+                patchSetName: node-role-patchset
+#########################################################################################
+          - name: eks-security-group
+            base:
+              apiVersion: ec2.aws.crossplane.io/v1beta1
+              kind: SecurityGroup
+              spec:
+                forProvider:
+                  region: eu-central-1
+                  description: Secutiry group for ah application cluster
+                  egress:
+                    - fromPort: -1
+                      ipProtocol: "-1"
+                      ipRanges:
+                        - cidrIp: 0.0.0.0/0
+                      toPort: -1
+                  ingress:
+                    - fromPort: -1
+                      ipProtocol: "-1"
+                      ipRanges:
+                        - cidrIp: 0.0.0.0/0
+                      toPort: -1
+                  tags:
+                    - key: cluster-name
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.securityGroupName
+                toFieldPath: spec.forProvider.groupName
+              - fromFieldPath: spec.securityGroupName
+                toFieldPath: metadata.name
+              - type: PatchSet
+                patchSetName: vpc-patchset
+              - fromFieldPath: spec.clusterName
+                toFieldPath: spec.forProvider.tags[0].value
+#########################################################################################
+          - name: eks-cluster
+            base:
+              apiVersion: eks.aws.crossplane.io/v1beta1
+              kind: Cluster
+              spec:
+                forProvider:
+                  region: eu-central-1
+                  resourcesVpcConfig:
+                    endpointPrivateAccess: true
+                    endpointPublicAccess: true
+                  roleArnRef:
+                    name: ah-app-cluster-role
+                  version: "1.31"
+                providerConfigRef:
+                  name: aws-provider-config
+                writeConnectionSecretToRef:
+                  namespace: default
+                  name: ah-app-eks-connection-details
+            patches:
+              - fromFieldPath: spec.clusterRoleName
+                toFieldPath: spec.forProvider.roleArnRef.name
+              - fromFieldPath: spec.clusterName
+                toFieldPath: metadata.name
+              - fromFieldPath: spec.securityGroupName
+                toFieldPath: spec.forProvider.resourcesVpcConfig.securityGroupIdRefs[0].name
+              - fromFieldPath: spec.subnetName
+                toFieldPath: spec.forProvider.resourcesVpcConfig.subnetIdRefs[0].name
+                transforms:
+                  - type: string
+                    string:
+                      type: Format
+                      fmt: "%s-1"
+              - fromFieldPath: spec.subnetName
+                toFieldPath: spec.forProvider.resourcesVpcConfig.subnetIdRefs[1].name
+                transforms:
+                  - type: string
+                    string:
+                      type: Format
+                      fmt: "%s-2"
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.identity.oidc.issuer
+                toFieldPath: status.eks.oidc
+                transforms:
+                  - type: string
+                    string:
+                      type: TrimPrefix
+                      trim: 'https://'
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.identity.oidc.issuer
+                toFieldPath: status.eks.oidcURL
+#########################################################################################
+          - name: node-launch-template
+            base:
+              apiVersion: ec2.aws.crossplane.io/v1alpha1
+              kind: LaunchTemplate
+              metadata:
+                name: ah-app-eks-node-launch-template
+              spec:
+                forProvider:
+                  launchTemplateData:
+                    metadataOptions:
+                      httpEndpoint: enabled
+                      httpTokens: optional
+                  launchTemplateName: ah-app-eks-node-launch-template
+                  region: eu-central-1
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.launchTemplate.launchTemplateName
+                toFieldPath: status.launchTemplateName
+#########################################################################################
+          - name: node-group
+            base:
+              apiVersion: eks.aws.crossplane.io/v1alpha1
+              kind: NodeGroup
+              metadata:
+                name: ah-app-eks-node-group
+              spec:
+                forProvider:
+                  region: eu-central-1
+                  instanceTypes:
+                    - "t3.small"
+                  scalingConfig:
+                    desiredSize: 2
+                    maxSize: 2
+                    minSize: 2
+                  updateConfig:
+                    force: true
+                    maxUnavailablePercentage: 50
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.clusterName
+                toFieldPath: spec.forProvider.clusterNameRef.name
+              - fromFieldPath: spec.nodeRoleName
+                toFieldPath: spec.forProvider.nodeRoleRef.name
+              - fromFieldPath: spec.subnetName
+                toFieldPath: spec.forProvider.subnetRefs[0].name
+                transforms:
+                  - type: string
+                    string:
+                      type: Format
+                      fmt: "%s-1"
+              - fromFieldPath: spec.subnetName
+                toFieldPath: spec.forProvider.subnetRefs[1].name
+                transforms:
+                  - type: string
+                    string:
+                      type: Format
+                      fmt: "%s-2"
+              - fromFieldPath: status.launchTemplateName
+                toFieldPath: spec.forProvider.launchTemplate.nameRef.name
+#########################################################################################
+          - name: eks-oidc-provider
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: OpenIDConnectProvider
+              metadata:
+                name: ah-app-eks-oidc-provider
+              spec:
+                forProvider:
+                  clientIDList:
+                    - sts.amazonaws.com
+                  thumbprintList:
+                    - 9e99a48a9960b14926bb7f3b02e22da2b0ab7280
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: status.eks.oidcURL
+                toFieldPath: spec.forProvider.url
+#########################################################################################
+          - name: alb-iam-role-policy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Policy
+              metadata:
+                name: alb-role-test-policy-metadata-name
+              spec:
+                deletionPolicy: Delete
+                forProvider:
+                  document: |
+                    {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "iam:CreateServiceLinkedRole"
+                                ],
+                                "Resource": "*",
+                                "Condition": {
+                                    "StringEquals": {
+                                        "iam:AWSServiceName": "elasticloadbalancing.amazonaws.com"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "ec2:DescribeAccountAttributes",
+                                    "ec2:DescribeAddresses",
+                                    "ec2:DescribeAvailabilityZones",
+                                    "ec2:DescribeInternetGateways",
+                                    "ec2:DescribeVpcs",
+                                    "ec2:DescribeVpcPeeringConnections",
+                                    "ec2:DescribeSubnets",
+                                    "ec2:DescribeSecurityGroups",
+                                    "ec2:DescribeInstances",
+                                    "ec2:DescribeNetworkInterfaces",
+                                    "ec2:DescribeTags",
+                                    "ec2:GetCoipPoolUsage",
+                                    "ec2:DescribeCoipPools",
+                                    "ec2:GetSecurityGroupsForVpc",
+                                    "elasticloadbalancing:DescribeLoadBalancers",
+                                    "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                                    "elasticloadbalancing:DescribeListeners",
+                                    "elasticloadbalancing:DescribeListenerCertificates",
+                                    "elasticloadbalancing:DescribeSSLPolicies",
+                                    "elasticloadbalancing:DescribeRules",
+                                    "elasticloadbalancing:DescribeTargetGroups",
+                                    "elasticloadbalancing:DescribeTargetGroupAttributes",
+                                    "elasticloadbalancing:DescribeTargetHealth",
+                                    "elasticloadbalancing:DescribeTags",
+                                    "elasticloadbalancing:DescribeTrustStores",
+                                    "elasticloadbalancing:DescribeListenerAttributes",
+                                    "elasticloadbalancing:DescribeCapacityReservation"
+                                ],
+                                "Resource": "*"
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "cognito-idp:DescribeUserPoolClient",
+                                    "acm:ListCertificates",
+                                    "acm:DescribeCertificate",
+                                    "iam:ListServerCertificates",
+                                    "iam:GetServerCertificate",
+                                    "waf-regional:GetWebACL",
+                                    "waf-regional:GetWebACLForResource",
+                                    "waf-regional:AssociateWebACL",
+                                    "waf-regional:DisassociateWebACL",
+                                    "wafv2:GetWebACL",
+                                    "wafv2:GetWebACLForResource",
+                                    "wafv2:AssociateWebACL",
+                                    "wafv2:DisassociateWebACL",
+                                    "shield:GetSubscriptionState",
+                                    "shield:DescribeProtection",
+                                    "shield:CreateProtection",
+                                    "shield:DeleteProtection"
+                                ],
+                                "Resource": "*"
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "ec2:AuthorizeSecurityGroupIngress",
+                                    "ec2:RevokeSecurityGroupIngress"
+                                ],
+                                "Resource": "*"
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "ec2:CreateSecurityGroup"
+                                ],
+                                "Resource": "*"
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "ec2:CreateTags"
+                                ],
+                                "Resource": "arn:aws:ec2:*:*:security-group/*",
+                                "Condition": {
+                                    "StringEquals": {
+                                        "ec2:CreateAction": "CreateSecurityGroup"
+                                    },
+                                    "Null": {
+                                        "aws:RequestTag/elbv2.k8s.aws/cluster": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "ec2:CreateTags",
+                                    "ec2:DeleteTags"
+                                ],
+                                "Resource": "arn:aws:ec2:*:*:security-group/*",
+                                "Condition": {
+                                    "Null": {
+                                        "aws:RequestTag/elbv2.k8s.aws/cluster": "true",
+                                        "aws:ResourceTag/elbv2.k8s.aws/cluster": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "ec2:AuthorizeSecurityGroupIngress",
+                                    "ec2:RevokeSecurityGroupIngress",
+                                    "ec2:DeleteSecurityGroup"
+                                ],
+                                "Resource": "*",
+                                "Condition": {
+                                    "Null": {
+                                        "aws:ResourceTag/elbv2.k8s.aws/cluster": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:CreateLoadBalancer",
+                                    "elasticloadbalancing:CreateTargetGroup"
+                                ],
+                                "Resource": "*",
+                                "Condition": {
+                                    "Null": {
+                                        "aws:RequestTag/elbv2.k8s.aws/cluster": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:CreateListener",
+                                    "elasticloadbalancing:DeleteListener",
+                                    "elasticloadbalancing:CreateRule",
+                                    "elasticloadbalancing:DeleteRule"
+                                ],
+                                "Resource": "*"
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:AddTags",
+                                    "elasticloadbalancing:RemoveTags"
+                                ],
+                                "Resource": [
+                                    "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*",
+                                    "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
+                                    "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*"
+                                ],
+                                "Condition": {
+                                    "Null": {
+                                        "aws:RequestTag/elbv2.k8s.aws/cluster": "true",
+                                        "aws:ResourceTag/elbv2.k8s.aws/cluster": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:AddTags",
+                                    "elasticloadbalancing:RemoveTags"
+                                ],
+                                "Resource": [
+                                    "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*",
+                                    "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
+                                    "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
+                                    "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*"
+                                ]
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                                    "elasticloadbalancing:SetIpAddressType",
+                                    "elasticloadbalancing:SetSecurityGroups",
+                                    "elasticloadbalancing:SetSubnets",
+                                    "elasticloadbalancing:DeleteLoadBalancer",
+                                    "elasticloadbalancing:ModifyTargetGroup",
+                                    "elasticloadbalancing:ModifyTargetGroupAttributes",
+                                    "elasticloadbalancing:DeleteTargetGroup",
+                                    "elasticloadbalancing:ModifyListenerAttributes",
+                                    "elasticloadbalancing:ModifyCapacityReservation"
+                                ],
+                                "Resource": "*",
+                                "Condition": {
+                                    "Null": {
+                                        "aws:ResourceTag/elbv2.k8s.aws/cluster": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:AddTags"
+                                ],
+                                "Resource": [
+                                    "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*",
+                                    "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
+                                    "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*"
+                                ],
+                                "Condition": {
+                                    "StringEquals": {
+                                        "elasticloadbalancing:CreateAction": [
+                                            "CreateTargetGroup",
+                                            "CreateLoadBalancer"
+                                        ]
+                                    },
+                                    "Null": {
+                                        "aws:RequestTag/elbv2.k8s.aws/cluster": "false"
+                                    }
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:RegisterTargets",
+                                    "elasticloadbalancing:DeregisterTargets"
+                                ],
+                                "Resource": "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "elasticloadbalancing:SetWebAcl",
+                                    "elasticloadbalancing:ModifyListener",
+                                    "elasticloadbalancing:AddListenerCertificates",
+                                    "elasticloadbalancing:RemoveListenerCertificates",
+                                    "elasticloadbalancing:ModifyRule"
+                                ],
+                                "Resource": "*"
+                            }
+                        ]
+                    }
+                  name: ah-AWSLoadBalancerControllerIAMPolicy
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.arn
+                toFieldPath: status.albRolePolicyArn
+#########################################################################################
+          - name: alb-iam-role
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Role
+              spec:
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.albRoleName
+                toFieldPath: metadata.name
+              - type: CombineFromComposite
+                combine:
+                  variables:
+                    - fromFieldPath: status.eks.oidc
+                    - fromFieldPath: status.eks.oidc
+                    - fromFieldPath: status.eks.oidc
+                  strategy: string
+                  string:
+                    fmt: |
+                      {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                          {
+                            "Effect": "Allow",
+                            "Principal": {
+                              "Federated": "arn:aws:iam::722377226063:oidc-provider/%s"
+                            },
+                            "Action": "sts:AssumeRoleWithWebIdentity",
+                            "Condition": {
+                              "StringEquals": {
+                                "%s:aud": "sts.amazonaws.com",
+                                "%s:sub": "system:serviceaccount:kube-system:alb-controller-sa"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                toFieldPath: spec.forProvider.assumeRolePolicyDocument
+#########################################################################################
+          - name: alb-role-policy-attachment
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-alb-role-policy-attachment
+              spec:
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.albRoleName
+                toFieldPath: spec.forProvider.roleNameRef.name
+              - fromFieldPath: status.albRolePolicyArn
+                toFieldPath: spec.forProvider.policyArn
+#########################################################################################
+          - name: ebs-csi-iam-role
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Role
+              spec:
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.ebsCsiRoleName
+                toFieldPath: metadata.name
+              - type: CombineFromComposite
+                combine:
+                  variables:
+                    - fromFieldPath: status.eks.oidc
+                    - fromFieldPath: status.eks.oidc
+                    - fromFieldPath: status.eks.oidc
+                  strategy: string
+                  string:
+                    fmt: |
+                      {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                          {
+                            "Effect": "Allow",
+                            "Principal": {
+                              "Federated": "arn:aws:iam::722377226063:oidc-provider/%s"
+                            },
+                            "Action": "sts:AssumeRoleWithWebIdentity",
+                            "Condition": {
+                              "StringEquals": {
+                                "%s:aud": "sts.amazonaws.com",
+                                "%s:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                toFieldPath: spec.forProvider.assumeRolePolicyDocument
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.arn
+                toFieldPath: status.ebsCsiRoleArn
+#########################################################################################
+          - name: ebs-csi-role-policy-attachment
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-ebs-csi-role-policy-attachment
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.ebsCsiRoleName
+                toFieldPath: spec.forProvider.roleNameRef.name
+#########################################################################################
+          - name: ebs-csi-cluster-addon
+            base:
+              apiVersion: eks.aws.crossplane.io/v1alpha1
+              kind: Addon
+              spec:
+                forProvider:
+                  addonName: aws-ebs-csi-driver
+                  addonVersion: v1.38.1-eksbuild.2
+                  region: eu-central-1
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - fromFieldPath: spec.clusterName
+                toFieldPath: spec.forProvider.clusterNameRef.name
+              - fromFieldPath: status.ebsCsiRoleArn
+                toFieldPath: spec.forProvider.serviceAccountRoleARN
+#########################################################################################
+    - step: detect-readiness
+      functionRef:
+        name: auto-ready-function
