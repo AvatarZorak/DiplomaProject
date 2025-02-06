@@ -15,9 +15,6 @@ spec:
     name: in-cluster
     namespace: default
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
     syncOptions:
       - Validate=true
       - ApplyOutOfSyncOnly=true
