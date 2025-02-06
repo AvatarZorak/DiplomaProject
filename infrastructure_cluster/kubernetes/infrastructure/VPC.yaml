@@ -3,7 +3,7 @@ kind: VPCXR
 metadata:
   name: ah-app-vpc
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   vpcName: ah-app-vpc
   subnetName: ah-app-subnet
