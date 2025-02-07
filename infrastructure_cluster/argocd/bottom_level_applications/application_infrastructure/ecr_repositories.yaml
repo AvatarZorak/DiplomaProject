@@ -12,7 +12,7 @@ spec:
   sources:
     - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
       targetRevision: main
-      path: infrastructure_cluster/crossplane/ECR
+      path: infrastructure_cluster/crossplane/ecr
     - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
       targetRevision: main
       path: infrastructure_cluster/kubernetes/infrastructure
