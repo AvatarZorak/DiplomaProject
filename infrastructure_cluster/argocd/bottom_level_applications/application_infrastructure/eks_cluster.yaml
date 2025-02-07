@@ -15,9 +15,7 @@ spec:
       path: infrastructure_cluster/crossplane/cluster
     - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
       targetRevision: main
-      path: infrastructure_cluster/kubernetes/infrastructure
-      directory:
-        include: "EKSCluster.yaml"
+      path: infrastructure_cluster/kubernetes/infrastructure/EKSCluster
   destination:
     name: in-cluster
     namespace: default

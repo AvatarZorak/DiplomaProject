@@ -15,9 +15,7 @@ spec:
       path: infrastructure_cluster/crossplane/vpc
     - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
       targetRevision: main
-      path: infrastructure_cluster/kubernetes/infrastructure
-      directory:
-        include: "VPC.yaml"
+      path: infrastructure_cluster/kubernetes/infrastructure/VPC
   destination:
     name: in-cluster
     namespace: default
