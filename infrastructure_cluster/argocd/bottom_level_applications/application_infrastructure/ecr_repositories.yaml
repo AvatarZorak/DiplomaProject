@@ -15,7 +15,9 @@ spec:
       path: infrastructure_cluster/crossplane/ECR
     - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
       targetRevision: main
-      path: infrastructure_cluster/kubernetes/infrastructure/ECR
+      path: infrastructure_cluster/kubernetes/infrastructure
+      directory:
+        include: "ECR.yaml"
   destination:
     name: in-cluster
     namespace: default
