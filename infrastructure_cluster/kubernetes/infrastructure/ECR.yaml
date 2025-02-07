@@ -1,4 +1,4 @@
-apiVersion: xrdgroup.org
+apiVersion: xrdgroup.org/v1alpha1
 kind: ECRRepositoryXR
 metadata:
   name: ah-app-ecr-repositories
