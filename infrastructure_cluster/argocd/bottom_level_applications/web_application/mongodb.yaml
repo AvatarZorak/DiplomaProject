@@ -29,5 +29,5 @@ spec:
         arbiter:
           enabled: false
   destination:
-    name: remote
+    name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
     namespace: default

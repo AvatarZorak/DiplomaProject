@@ -14,7 +14,7 @@ spec:
     targetRevision: main
     path: application_cluster/kubernetes/web_application/backend
   destination:
-    name: remote
+    name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
     namespace: default
   syncPolicy:
     automated:
