@@ -268,9 +268,9 @@ spec:
                   instanceTypes:
                     - "t3.small"
                   scalingConfig:
-                    desiredSize: 2
-                    maxSize: 2
-                    minSize: 2
+                    desiredSize: 3
+                    maxSize: 3
+                    minSize: 3
                   updateConfig:
                     force: true
                     maxUnavailablePercentage: 50
