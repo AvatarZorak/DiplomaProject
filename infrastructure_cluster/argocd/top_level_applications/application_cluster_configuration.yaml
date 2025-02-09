@@ -11,8 +11,11 @@ spec:
     - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
       targetRevision: main
       path: application_cluster/kubernetes/additional_resources
+    - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
+      targetRevision: main
+      path: infrastructure_cluster/argocd/bottom_level_applications/application_cluster_configuration
   destination:
-    name: remote
+    name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
     namespace: default
   syncPolicy:
     automated:
