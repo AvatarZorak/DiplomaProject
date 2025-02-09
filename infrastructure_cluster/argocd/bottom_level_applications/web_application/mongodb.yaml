@@ -10,11 +10,11 @@ metadata:
 spec:
   project: default
   source:
+    repoURL: "registry-1.docker.io/bitnamicharts"
+    path: "mongodb"
+    chart: mongodb
+    targetRevision: 16.4.2
     helm:
-      repoURL: "registry-1.docker.io/bitnamicharts"
-      path: "mongodb"
-      chart: mongodb
-      targetRevision: 16.4.2
       values: |
         architecture: replicaset
         replicaCount: 2

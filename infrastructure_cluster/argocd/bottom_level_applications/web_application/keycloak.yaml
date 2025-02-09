@@ -10,11 +10,11 @@ metadata:
 spec:
   project: default
   source:
+    repoURL: "registry-1.docker.io/bitnamicharts"
+    path: "keycloak"
+    chart: keycloak
+    targetRevision: 24.4.7
     helm:
-      repoURL: "registry-1.docker.io/bitnamicharts"
-      path: "keycloak"
-      chart: keycloak
-      targetRevision: 24.4.7
       values: |
         auth:
           adminUser: "admin"

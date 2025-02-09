@@ -49,6 +49,9 @@ spec:
                   availabilityZone: eu-central-1a
                   cidrBlock: 10.0.0.0/24
                   mapPublicIPOnLaunch: true
+                  tags:
+                    - key: kubernetes.io/role/elb
+                      value: 1
                 providerConfigRef:
                   name: aws-provider-config
             patches:
@@ -72,6 +75,9 @@ spec:
                   availabilityZone: eu-central-1b
                   cidrBlock: 10.0.1.0/24
                   mapPublicIPOnLaunch: true
+                  tags:
+                    - key: kubernetes.io/role/elb
+                      values: 1
                 providerConfigRef:
                   name: aws-provider-config
             patches:
