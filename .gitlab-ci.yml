@@ -1,13 +1,16 @@
 stages:
-  - validation
+  # - validation
   - build
 
-validation:
-  stage: validation
-  script:
-    - echo "Valid"
-  tags:
-    - ci-shared
+# validation:
+#   stage: validation
+#   script:
+#     - echo "Valid"
+#   tags:
+#     - ci-shared
+
+before_script:
+  - echo "validation"
 
 build-frontend-image:
   stage: build
