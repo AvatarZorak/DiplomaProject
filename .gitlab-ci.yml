@@ -6,6 +6,8 @@ validation:
   stage: validation
   script:
     - echo "Valid"
+  tags:
+    - ci-shared
 
 build-frontend-image:
   stage: build
