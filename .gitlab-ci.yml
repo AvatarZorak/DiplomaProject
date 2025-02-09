@@ -1,5 +1,11 @@
 stages:
+  - validation
   - build
+
+validation:
+  stage: validation
+  script:
+    - echo "Valid"
 
 build-frontend-image:
   stage: build
