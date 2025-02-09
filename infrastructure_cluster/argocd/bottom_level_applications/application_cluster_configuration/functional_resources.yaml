@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: functional-resources-application
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
+    targetRevision: main
+    path: application_cluster/kubernetes/additional_resources/functional
+  destination:
+    name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
+    namespace: default

@@ -9,7 +9,6 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:722377226063:certificate/0d37cdbc-5f5a-4193-b097-3113e0fc6a56
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    argocd.argoproj.io/sync-wave: "3"
 spec:
   ingressClassName: alb
   rules:

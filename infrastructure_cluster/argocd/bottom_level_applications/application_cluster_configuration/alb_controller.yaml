@@ -19,5 +19,5 @@ spec:
           create: false
           name: alb-controller-sa
   destination:
-    name: in-cluster
+    name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
     namespace: kube-system

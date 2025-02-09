@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: application-cluster-configuration
+  name: service-resources-application
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "1"
@@ -12,14 +12,7 @@ spec:
   source:
     repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
     targetRevision: main
-    path: infrastructure_cluster/argocd/bottom_level_applications/application_cluster_configuration
+    path: application_cluster/kubernetes/additional_resources/service
   destination:
-    name: in-cluster
-    namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - Validate=true
-      - ApplyOutOfSyncOnly=true
+    name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
+    namespace: kube-system
