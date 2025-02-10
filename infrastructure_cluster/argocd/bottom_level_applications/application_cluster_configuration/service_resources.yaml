@@ -16,3 +16,7 @@ spec:
   destination:
     name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
     namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
