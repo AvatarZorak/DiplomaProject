@@ -1,38 +1,32 @@
 stages:
-  - testing
   - build
-
-test:
-  stage: testing
-  script:
-    - echo "$ACCOUNT_ID"
-  tags:
-    - ci-shared
 
 build-frontend-image:
   stage: build
   image: docker:latest
   services:
-      - docker:dind
+    - docker:dind
   script:
     - aws ecr get-login-password --region=eu-central-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com
-    - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-frontend-repository:$CI_PIPELINE_IID ./frontend
-  # rules:
-  #     - changes:
-  #         - ./frontend/**/*
+    - docker build --no-cache -t $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-frontend:1.$CI_PIPELINE_IID ./frontend
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-frontend:1.$CI_PIPELINE_IID
+  rules:
+    - changes:
+      - frontend/**/*
   tags:
-      - ci-shared
+    - ci-shared
 
 build-backend-image:
   stage: build
   image: docker:latest
   services:
-      - docker:dind
+    - docker:dind
   script:
     - aws ecr get-login-password --region=eu-central-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com
-    - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-backend-repository:$CI_PIPELINE_IID ./backend
-  # rules:
-  #     - changes:
-  #         - ./backend/**/*
+    - docker build --no-cache -t $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-backend:1.$CI_PIPELINE_IID ./backend
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-backend:1.$CI_PIPELINE_IID
+  rules:
+    - changes:
+      - backend/**/*
   tags:
-      - ci-shared
+    - ci-shared
