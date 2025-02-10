@@ -6,7 +6,7 @@ import { ConfigurationModule } from '../configuration/configuration.module';
   imports: [
     ConfigurationModule,
     MongooseModule.forRoot(
-      `mongodb://${process.env.mongo_user}:${process.env.mongo_password}@mongodb-headless:27017`,
+      `mongodb://${process.env.mongo_user}:${process.env.mongo_password}@localhost:27017`,
       {
         dbName: 'Markbook',
         directConnection: true,
