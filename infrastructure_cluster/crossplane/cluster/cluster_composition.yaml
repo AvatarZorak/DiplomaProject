@@ -150,6 +150,21 @@ spec:
               - type: PatchSet
                 patchSetName: node-role-patchset
 #########################################################################################
+          - name: node-role-policy-attachment-AmazonEKSEBSCSIDriverPolicy
+            base:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: ah-app-node-role-policy-attachment-AmazonEKSEBSCSIDriverPolicy
+              spec:
+                forProvider:
+                  policyArn: arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy
+                providerConfigRef:
+                  name: aws-provider-config
+            patches:
+              - type: PatchSet
+                patchSetName: node-role-patchset
+#########################################################################################
           - name: eks-security-group
             base:
               apiVersion: ec2.aws.crossplane.io/v1beta1
