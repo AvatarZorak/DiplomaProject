@@ -14,27 +14,27 @@ import { KeycloakConfigService } from './keycloak-config/keycloak-config.service
 
 @Module({
   imports: [
-    // KeycloakConnectModule.registerAsync({
-    //   useExisting: KeycloakConfigService,
-    //   imports: [KeycloakConfigModule],
-    // }),
+    KeycloakConnectModule.registerAsync({
+      useExisting: KeycloakConfigService,
+      imports: [KeycloakConfigModule],
+    }),
     StudentMarkbookModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ResourceGuard,
-    // },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RoleGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ResourceGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
   ],
 })
 export class AppModule {}

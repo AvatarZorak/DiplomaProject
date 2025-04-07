@@ -10,7 +10,7 @@ import {
 export class KeycloakConfigService implements KeycloakConnectOptionsFactory {
   createKeycloakConnectOptions(): KeycloakConnectOptions {
     return {
-      authServerUrl: 'http://localhost:8080/',
+      authServerUrl: 'http://localhost:8081/',
       realm: 'master',
       clientId: 'e-markbook-backend',
       secret: 'wQrCsf6pEcyMXPLxZS3XgfCIXGnk42XR',

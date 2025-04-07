@@ -1,25 +1,24 @@
 import Navbar from "../Navbar/Navbar.tsx";
 import Body from "../Body/Body.tsx";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import axios from "axios";
-import {MainPageStudentInformation} from "../../interface/MainPageStudentInformation.tsx";
-import {useKeycloak} from "@react-keycloak/web";
+import { MainPageStudentInformation } from "../../interface/MainPageStudentInformation.tsx";
+import {TokenContext} from "../../App.tsx";
+import {useLocation} from "react-router-dom";
 
 function MainPage() {
+    const token = useContext(TokenContext);
 
-    const id: number = 1
-    const year: number = 2024
+    const [studentData, setStudentData] = useState<MainPageStudentInformation>();
 
-    const [studentData, setStudentData] = useState<MainPageStudentInformation>()
+    const { pathname } = useLocation();
 
-    // const { keycloak } = useKeycloak()
-    //
-    // console.log(keycloak.token)
+    const schoolYear = pathname.toString().split("/").pop();
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/student-markbook/${id}/${year}`, {
+        axios.get(`http://localhost:5000/student-markbook/year/${schoolYear}`, {
             headers: {
-                // "Authorization": 'Bearer ' + keycloak.token,
+                "Authorization": 'Bearer ' + token,
                 "Content-Type": "application/json"
             }
         }).then(
@@ -29,7 +28,7 @@ function MainPage() {
         ).catch(err => {
             return <>Server error! {err} </>
         })
-    }, [])
+    }, []);
 
     if(studentData == undefined) {
         return <>Error fetching student information!</>

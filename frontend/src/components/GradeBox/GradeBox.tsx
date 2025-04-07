@@ -19,12 +19,15 @@ function GradeBox({ grade }: Props) {
 
     return <>
 
-        <div onClick={() => {setGradePopupState(!gradePopupState)}} className="grade" style={getColor(grade.grade)}>
+        <div onMouseOver={() => {setGradePopupState(!gradePopupState)}} onMouseLeave={() => {setGradePopupState(!gradePopupState)}}className="grade" style={getColor(grade.grade)}>
             {grade.grade}
+            {gradePopupState && <div id="grade-popup" className="grade-popup">
+                {grade.description}
+                <hr></hr>
+                {grade.expandedGrade}
+            </div>}
         </div>
-        {gradePopupState && <div id="grade-popup" className="grade-popup">
-            {grade.expandedGrade} - {grade.description}
-        </div>}
+
     </>
 }
 

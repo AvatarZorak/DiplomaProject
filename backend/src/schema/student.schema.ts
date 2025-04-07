@@ -3,8 +3,8 @@ import { SchoolYear, SchoolYearSchema } from './school-year.schema';
 
 @Schema({ _id: false })
 export class Student {
-  @Prop({ type: Number })
-  id: number;
+  @Prop({ type: String })
+  id: string;
 
   @Prop({ type: String })
   name: string;

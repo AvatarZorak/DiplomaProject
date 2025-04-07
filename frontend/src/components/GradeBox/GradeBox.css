@@ -4,9 +4,29 @@
     width: 25px;
     border-radius: 50%;
     margin: 0.3% 0.3%;
+    box-shadow: 0 0 2px black;
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    cursor: pointer;
 }
 
 .grade-popup {
-    position: relative;
-    background-color: red;
+    position: fixed;
+    margin: 30px 0;
+    background-color: #bc90fd;
+    border-radius: 5px;
+    padding: 10px;
+    animation: fadeIn 0.4s;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

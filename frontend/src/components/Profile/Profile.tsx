@@ -1,7 +1,26 @@
 import "./Profile.css"
-import MarkbookCard from "../MarkbookCard/MarkbookCard.tsx";
+import {TokenContext} from "../../App.tsx";
+import {useContext, useEffect, useState} from "react";
+import axios from "axios";
+import {ProfileYearCard} from "../../interface/ProfileYearCard.tsx";
+import MarkbookProfileCard from "../MarkbookProfileCard/MarkbookProfileCard.tsx"
 
 function Profile() {
+
+    const token = useContext(TokenContext);
+
+    const [profileYearCards, setProfileYearCards] = useState<ProfileYearCard[]>();
+
+    useEffect(() => {
+        axios.get("http://localhost:5000/student-markbook/years", {
+            headers: {
+                "Authorization": 'Bearer ' + token,
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            setProfileYearCards(response.data)
+        });
+    }, []);
 
     return <>
         <div className="profile-card">
@@ -13,8 +32,11 @@ function Profile() {
             </div>
         </div>
         <div className="markbooks">
-            <MarkbookCard year={2023}></MarkbookCard>
-            <MarkbookCard year={2024}></MarkbookCard>
+            { profileYearCards &&
+                profileYearCards.map((yearCard) => {
+                    return <MarkbookProfileCard yearCard={yearCard}></MarkbookProfileCard>
+                })
+            }
         </div>
     </>
 }

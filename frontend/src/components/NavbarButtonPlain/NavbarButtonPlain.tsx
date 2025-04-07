@@ -13,12 +13,12 @@ function NavbarButtonPlain({type, name} :Props) {
 
     return <>
         {type == "general" &&
-        <div className="navbar-button-plain" style={{borderBottomRightRadius: "25px"}}>
+        <div className="navbar-button-plain" style={{borderBottomRightRadius: "15px"}}>
         </div>
         }
 
         {type == "profile" &&
-        <div className="navbar-button-plain" style={{borderBottomLeftRadius: "25px"}}>
+        <div className="navbar-button-plain" style={{borderBottomLeftRadius: "15px"}}>
             <BsSend className="messages-icon"></BsSend>
             <Link to="/profile" className="profile-tab">
                 <HiOutlineUserCircle className="profile-icon"></HiOutlineUserCircle>
