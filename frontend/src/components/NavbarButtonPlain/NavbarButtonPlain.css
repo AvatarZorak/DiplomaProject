@@ -14,7 +14,7 @@
     margin: 0 10px;
     transition: color 300ms, background-color 300ms;
     color: #d0bcf6;
-    border-radius: 25px;
+    border-radius: 15px;
 }
 
 .messages-icon:hover {
@@ -30,7 +30,7 @@
     align-items: center;
     transition: color 300ms, background-color 300ms;
     color: #d0bcf6;
-    border-radius: 25px;
+    border-radius: 15px;
     text-decoration: none;
 }
 
