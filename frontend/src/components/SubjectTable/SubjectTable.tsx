@@ -56,6 +56,7 @@ function SubjectTable({ schoolYear, type }: Props) {
                                     <td className="subject-table-cell subject-table-cell-subject-grades">
                                         {
                                             subject.remarks.map((remark) => {
+                                                console.log(remark)
                                                 return "hello"
                                             })
                                         }

@@ -7,7 +7,7 @@ import {ReactKeycloakProvider} from '@react-keycloak/web'
 
 const keycloakConfig = {
     realm: 'master',
-    url: 'http://localhost:8081/',
+    url: 'https://ahristov.itgix.eu/',
     clientId: 'e-markbook-frontend'
 }
 

@@ -16,7 +16,7 @@ function MainPage() {
     const schoolYear = pathname.toString().split("/").pop();
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/student-markbook/year/${schoolYear}`, {
+        axios.get(`https://ahristov.itgix.eu/student-markbook/year/${schoolYear}`, {
             headers: {
                 "Authorization": 'Bearer ' + token,
                 "Content-Type": "application/json"

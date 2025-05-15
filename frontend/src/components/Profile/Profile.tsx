@@ -12,7 +12,7 @@ function Profile() {
     const [profileYearCards, setProfileYearCards] = useState<ProfileYearCard[]>();
 
     useEffect(() => {
-        axios.get("http://localhost:5000/student-markbook/years", {
+        axios.get("https://ahristov.itgix.eu/student-markbook/years", {
             headers: {
                 "Authorization": 'Bearer ' + token,
                 "Content-Type": "application/json"
