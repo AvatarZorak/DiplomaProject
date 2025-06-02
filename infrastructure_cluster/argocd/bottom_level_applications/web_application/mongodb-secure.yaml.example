@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+    name: mongodb-application
+    namespace: argocd
+    annotations:
+        argocd.argoproj.io/sync-wave: "1"
+    finalizers:
+        - resources-finalizer.argocd.argoproj.io
+spec:
+    project: default
+    sources:
+        - repoURL: https://gitlab.itgix.com/elsys/alexander-hristov/infrastructure
+          targetRevision: main
+          path: application_cluster/kubernetes/external_secrets/mongodb-external-secret.yaml
+        - repoURL: "registry-1.docker.io/bitnamicharts"
+          path: "mongodb"
+          chart: mongodb
+          targetRevision: 16.4.2
+          helm:
+              values: |
+                  architecture: replicaset
+                  replicaCount: 2
+                  auth:
+                      enabled: true
+                      existingSecret: "mongodb-admin-credentials"
+                      usernames: ["user"]
+                      databases: ["Markbook"]
+                  service:
+                      nameOverride: "mongo-service"
+                  arbiter:
+                      enabled: false
+    destination:
+        name: arn:aws:eks:eu-central-1:722377226063:cluster/ah-app-eks
+        namespace: default
+    syncPolicy:
+        automated:
+            prune: true
+            selfHeal: true
