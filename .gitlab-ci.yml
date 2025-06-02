@@ -22,6 +22,8 @@ build-backend-image:
   services:
     - docker:dind
   script:
+    - cat $KEYCLOAK_ENV > ./backend/keycloak.env
+    - cat $MONGO_ENV > ./backend/mongo.env
     - aws ecr get-login-password --region=eu-central-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com
     - docker build --no-cache -t $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-backend:1.$CI_PIPELINE_IID ./backend
     - docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/ah-backend:1.$CI_PIPELINE_IID
